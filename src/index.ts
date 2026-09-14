@@ -4,7 +4,6 @@ import { checkService, type CheckResult } from "./checker";
 
 type Env = {
   DB: D1Database;
-  ASSETS: Fetcher;
 };
 
 const app = new Hono<{ Bindings: Env }>();
@@ -303,7 +302,10 @@ app.get("/api/check", async (c) => {
 
 app.get("/api/health", (c) => c.json({ ok: true, version: "1.0.0" }));
 
+app.get("/", (c) => c.json({ ok: true, message: "health-monitor api", endpoints: ["/api/services", "/api/status", "/api/history", "/api/check", "/api/health"] }));
+
 app.all("/api/*", (c) => c.json({ error: "not found" }, 404));
+app.all("*", (c) => c.json({ error: "not found" }, 404));
 
 async function handleScheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext) {
   console.log(`[cron] tick at ${new Date().toISOString()}`);
@@ -320,17 +322,6 @@ async function handleScheduled(event: ScheduledEvent, env: Env, ctx: ExecutionCo
 }
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    const url = new URL(request.url);
-    if (url.pathname.startsWith("/api/")) {
-      return app.fetch(request, env, ctx);
-    }
-    if (env.ASSETS) {
-      try {
-        return await env.ASSETS.fetch(request);
-      } catch {}
-    }
-    return app.fetch(request, env, ctx);
-  },
+  fetch: app.fetch,
   scheduled: handleScheduled,
 };

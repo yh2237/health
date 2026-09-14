@@ -4,14 +4,17 @@
   "main": "src/index.ts",
   "compatibility_date": "2024-12-01",
   "compatibility_flags": ["nodejs_compat"],
-  // KV namespace for storing health check history
-  // 作成方法: wrangler kv namespace create HEALTH_KV  または Cloudflareダッシュボード > Workers & Pages > KV
-  // 作成後に id を差し替える。Workers Buildsでデプロイする場合はダッシュボードで Bindings を設定することでもOK
-  "kv_namespaces": [
+  // D1 database for health check history
+  // 作成方法: npx wrangler d1 create health-monitor
+  // または Cloudflareダッシュボード > Workers & Pages > D1 > Create
+  // 出力された database_id を下記に貼り付け。Workers Buildsの場合はダッシュボードで Bindings > D1 を追加でもOK
+  "d1_databases": [
     {
-      "binding": "HEALTH_KV",
-      "id": "REPLACE_WITH_KV_ID",
-      "preview_id": "REPLACE_WITH_KV_PREVIEW_ID"
+      "binding": "DB",
+      "database_name": "health-monitor",
+      "database_id": "REPLACE_WITH_D1_ID",
+      "preview_database_id": "REPLACE_WITH_D1_ID",
+      "migrations_dir": "migrations"
     }
   ],
   // 5分ごとに死活監視を実行
@@ -23,9 +26,7 @@
     "binding": "ASSETS",
     "not_found_handling": "single-page-application"
   },
-  "vars": {
-    // フォールバック用: 環境変数で上書き可能だが、基本は src/config.ts で監視対象を管理
-  },
+  "vars": {},
   "observability": {
     "enabled": true
   }

@@ -52,10 +52,9 @@ function bucketColor(bucket) {
 }
 
 function uptimeToColor(uptime) {
-  // degradedの濃淡を uptime に応じて変える（任意）
   if (uptime == null) return "";
   if (uptime >= 1) return "";
-  if (uptime >= 0.9) return ""; // yellow
+  if (uptime >= 0.9) return "";
   return "";
 }
 
@@ -71,7 +70,6 @@ async function load() {
       return;
     }
 
-    // 各サービスの履歴を並列取得
     const histories = await Promise.all(
       services.map((s) =>
         fetchJson(`/api/history?service=${encodeURIComponent(s.id)}&bucket=${bucketMinutes}&days=${days}`).catch((e) => {
@@ -124,18 +122,13 @@ async function load() {
 
       servicesEl.appendChild(card);
 
-      // グリッド描画
       const grid = card.querySelector(".grid");
       if (hist && hist.buckets) {
         hist.buckets.forEach((b) => {
           const div = document.createElement("div");
           div.className = `box ${bucketColor(b)}`;
-          // degradedの場合はuptimeで色を微調整
           if (b.status === "degraded" && b.uptime != null) {
-            // 0.5-1.0 を yellow -> orange に補間
-            const t = (b.uptime - 0.5) / 0.5; // 0..1
-            // yellow #eab308 -> orange #f97316
-            // 簡易: uptime低いほど赤寄り
+            const t = (b.uptime - 0.5) / 0.5;
             if (b.uptime < 0.8) div.style.background = "#f97316";
             else if (b.uptime < 0.95) div.style.background = "#f59e0b";
           }
@@ -189,7 +182,6 @@ function hideTooltip() {
 function moveTooltip(e) {
   const x = e.clientX + 12;
   const y = e.clientY + 12;
-  // 画面端で反転
   const rect = tooltipEl.getBoundingClientRect();
   let left = x;
   let top = y;
@@ -203,6 +195,5 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-// 初回ロード + 60秒ごと自動更新
 load();
 setInterval(load, 60 * 1000);

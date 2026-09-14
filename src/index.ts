@@ -9,7 +9,6 @@ type Env = {
 
 const app = new Hono<{ Bindings: Env }>();
 
-// CORS
 app.use("/api/*", async (c, next) => {
   await next();
   c.header("Access-Control-Allow-Origin", "*");
@@ -19,10 +18,7 @@ app.use("/api/*", async (c, next) => {
 
 app.options("/api/*", (c) => c.text("", 200));
 
-// --- D1 helpers ---
-
 async function ensureTable(env: Env) {
-  // ローカルdevでmigrationが未適用でも動くように IF NOT EXISTS で担保
   try {
     await env.DB.prepare(
       `CREATE TABLE IF NOT EXISTS checks (
@@ -129,14 +125,13 @@ async function cleanupOld(env: Env) {
   } catch {}
 }
 
-// --- Bucket aggregation ---
 export type Bucket = {
-  start: number; // epoch ms
+  start: number;
   end: number;
   total: number;
   up: number;
   down: number;
-  uptime: number | null; // 0-1, null if no data
+  uptime: number | null;
   avgLatency: number | null;
   status: "up" | "degraded" | "down" | "nodata";
 };
@@ -179,8 +174,6 @@ function aggregateBuckets(checks: CheckResult[], bucketMinutes: number, days: nu
   }
   return result;
 }
-
-// --- API routes ---
 
 app.get("/api/services", (c) => {
   return c.json({

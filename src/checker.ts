@@ -1,6 +1,5 @@
 import type { MonitoredService } from "./config";
 
-// Cloudflare Tunnel エラーページの特徴的な文字列（小文字で比較）
 const TUNNEL_ERROR_KEYWORDS = [
   "cloudflare tunnel",
   "unable to reach the origin",
@@ -13,17 +12,16 @@ const TUNNEL_ERROR_KEYWORDS = [
   "error 502",
   "error 530",
   "ray id:",
-  // 日本語環境でのCloudflareエラーも念のため
   "オリジンに到達できません",
 ];
 
 export interface CheckResult {
   serviceId: string;
-  timestamp: number; // epoch ms
+  timestamp: number;
   ok: boolean;
-  status: number | null; // HTTP status, null if network error/timeout
+  status: number | null;
   latencyMs: number;
-  error?: string; // エラー概要
+  error?: string;
   isTunnelError?: boolean;
 }
 
@@ -36,7 +34,6 @@ export async function checkService(service: MonitoredService): Promise<CheckResu
     const res = await fetch(service.url, {
       method: "GET",
       signal: controller.signal,
-      // Cloudflare Workerからのfetchはキャッシュをバイパス
       cf: { cacheTtl: 0, cacheEverything: false } as any,
       headers: {
         "User-Agent": "health-monitor/1.0 (+cf-worker)",
@@ -47,13 +44,11 @@ export async function checkService(service: MonitoredService): Promise<CheckResu
     });
     const latency = Date.now() - start;
 
-    // ステータスが200-299以外は即ダウン判定
     if (!res.ok) {
-      // ボディも読んでTunnelエラーか確認（502等のボディにTunnelエラーが含まれることがある）
       let body = "";
       try {
         body = await res.text();
-      } catch {}
+      } catch { }
       const isTunnel = isTunnelErrorBody(body);
       return {
         serviceId: service.id,
@@ -66,15 +61,11 @@ export async function checkService(service: MonitoredService): Promise<CheckResu
       };
     }
 
-    // 200系でもボディがTunnelエラーページならダウン扱い
-    // 全文読むと重いので先頭8KB程度だけ読む
     let bodySnippet = "";
     try {
-      // text()だと全文読むが、TunnelエラーページはHTMLなので先頭で判定可能
       const text = await res.text();
       bodySnippet = text.slice(0, 8192);
     } catch {
-      // ボディ読み取り失敗は無視（ステータスが200なら一旦OK扱い）
       return {
         serviceId: service.id,
         timestamp: Date.now(),
@@ -127,6 +118,5 @@ function isTunnelErrorBody(body: string): boolean {
 }
 
 function isTunnelStatus(status: number): boolean {
-  // Cloudflare Tunnelがオリジンに到達できないときによく返すコード
   return status === 502 || status === 503 || status === 530 || status === 521 || status === 522 || status === 523;
 }

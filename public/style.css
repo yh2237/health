@@ -1,0 +1,175 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f9fafb;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --text: #111827;
+  --muted: #6b7280;
+  --green: #22c55e;
+  --green-dark: #16a34a;
+  --yellow: #eab308;
+  --orange: #f97316;
+  --red: #ef4444;
+  --gray: #e5e7eb;
+  --gray-dark: #9ca3af;
+}
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+.header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.header-inner h1 { font-size: 1.4rem; font-weight: 700; }
+.subtitle { color: var(--muted); font-size: 0.85rem; }
+.controls {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.control-group { display: flex; align-items: center; gap: 8px; }
+.control-group label { font-size: 0.85rem; color: var(--muted); }
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.segmented button {
+  border: none;
+  background: var(--card);
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--muted);
+}
+.segmented button.active {
+  background: var(--text);
+  color: #fff;
+}
+.segmented button + button { border-left: 1px solid var(--border); }
+.btn {
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.btn:hover { background: #f3f4f6; }
+.last-updated { font-size: 0.8rem; color: var(--muted); }
+
+.main { max-width: 1100px; margin: 0 auto; padding: 24px; }
+.loading { text-align: center; color: var(--muted); padding: 32px; }
+.services { display: grid; gap: 20px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.service-name { font-weight: 700; font-size: 1.05rem; }
+.service-host { color: var(--muted); font-size: 0.8rem; word-break: break-all; }
+.badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-up { background: #dcfce7; color: #166534; }
+.badge-down { background: #fee2e2; color: #991b1b; }
+.badge-unknown { background: #f3f4f6; color: var(--muted); }
+.meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.meta strong { color: var(--text); }
+
+.timeline {
+  margin-top: 14px;
+}
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.box {
+  width: 10px;
+  height: 30px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+.box.up { background: var(--green); }
+.box.degraded { background: var(--yellow); }
+.box.degraded[data-uptime] { /* will be set via inline style for gradient */ }
+.box.down { background: var(--red); }
+.box.nodata { background: var(--gray); border-color: #d1d5db; }
+.box:hover { filter: brightness(0.9); transform: translateY(-1px); }
+
+.timeline-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.bar-summary {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.legend {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 16px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-box { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+
+.tooltip {
+  position: fixed;
+  background: #111827;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 8px 10px;
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 50;
+  line-height: 1.4;
+  max-width: 260px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+.footer { text-align: center; color: var(--muted); font-size: 0.75rem; padding: 16px; }
+
+@media (max-width: 600px) {
+  .box { width: 8px; height: 24px; }
+}
